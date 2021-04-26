@@ -1,0 +1,83 @@
+﻿@page "/reperti"
+@inject BancaDati db
+
+
+<h3>Reperti del museo</h3>
+@if(nuovoRep == null)
+{
+    <button class="btn btn-primary" @onclick="(e => Aggiungi()) ">Nuovo reperto</button>
+    <table class="table table-hover">
+    
+        <tr>
+            <th width="10%">ID</th>
+            <th width="10%">Nome reperto</th>
+            <th width="10%">Tipologia</th>
+            <th width="10%">Periodo </th>
+            <th width="10%">Descrizione</th>
+            <th width="10%">Modifica </th>
+            <th width="10%">Cancella</th>
+        </tr>
+   
+
+
+
+
+    @foreach (Reperto singolo in db.reperti)
+    {
+        <tr>
+            <td>@singolo.Id</td>
+            <td>@singolo.NomeReperto</td>
+            <td>@singolo.Periodo</td>
+            <td>@singolo.Tipologia</td>
+            <td>@singolo.Descrizione</td>
+            <td><button class="oi oi-pencil" @onclick="(e => Modifica(singolo))"></button></td>
+            <td><button class="oi oi-trash" @onclick="(e => Cancella(singolo))"></button></td>
+        </tr>
+    }
+    </table>
+    } else
+{
+    <input @bind-value="nuovoRep.NomeReperto" placeholder="Nome reperto" />
+    <input @bind-value="nuovoRep.Periodo" placeholder="Periodo" />
+    <input @bind-value="nuovoRep.Tipologia" placeholder="Tipologia"/>
+    <input @bind-value="nuovoRep.Descrizione" placeholder="Descizione"/>
+    <button class="btn btn-success" @onclick="(e => Salva())">Salva</button>
+    <button class="btn btn-danger" @onclick="(e => Annulla())" > Annulla</button>
+}
+
+
+@code {
+    private Reperto nuovoRep;
+
+    private void Aggiungi()
+    {
+        nuovoRep = new Reperto();
+    }
+    private void Modifica(Reperto repDaModific)
+    {
+        nuovoRep = repDaModific;
+    }
+    private void Cancella(Reperto repDaCanc)
+    {
+        db.reperti.Remove(repDaCanc);
+        db.SaveChanges();
+    }
+    public void Annulla()
+    {
+        nuovoRep = null;
+    }
+    private void Salva()
+    {
+        if (nuovoRep.Id == 0)
+        {
+            db.reperti.Add(nuovoRep);
+        }
+        else
+        {
+            db.reperti.Update(nuovoRep);
+        }
+        db.SaveChanges();
+        nuovoRep = null;
+    }
+
+}   
